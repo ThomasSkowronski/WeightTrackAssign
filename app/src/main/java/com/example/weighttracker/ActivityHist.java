@@ -1,20 +1,19 @@
 package com.example.weighttracker;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class ActivityHist extends AppCompatActivity {
 
     String name = "Your Name";
     String goal = "Goal Weight";
@@ -31,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_scrn);
+        setContentView(R.layout.activity_hist);
 
         nameTxt = (TextView) findViewById(R.id.name);
         goalTxt = (TextView) findViewById(R.id.goal);
