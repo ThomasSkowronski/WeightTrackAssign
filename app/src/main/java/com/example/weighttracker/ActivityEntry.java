@@ -16,8 +16,9 @@ import java.util.Locale;
 
 public class ActivityEntry extends AppCompatActivity {
 
-    String name = "Your Name";
-    String goal = "Goal Weight";
+    //setup top and bottom bar
+    String name = User.getInstance().getName();
+    String goal = "Goal Weight: "+User.getInstance().getWeight()+ User.getInstance().getUnit();
 
     ImageButton mainbtn;
     Button entrybtn;
@@ -33,6 +34,7 @@ public class ActivityEntry extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entry);
 
+        //setup top and bottom bar
         nameTxt = (TextView) findViewById(R.id.name);
         goalTxt = (TextView) findViewById(R.id.goal);
         dateTxt = (TextView) findViewById(R.id.date);
@@ -78,6 +80,8 @@ public class ActivityEntry extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        //more below
 
     }
 }

@@ -3,4 +3,7 @@
     <string name="topBar">Name:
     \nGoal:
     \nDate: </string>
+    <string name="username">Your Name</string>
+    <string name="goal">goal weight</string>
+    <string name="settingsEditFields">"Name: \nGoal weight: \nUnits: "</string>
 </resources>
