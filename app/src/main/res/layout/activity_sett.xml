@@ -139,8 +139,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:focusable="auto"
-                android:focusableInTouchMode="false"
-                android:text="@string/username" />
+                android:focusableInTouchMode="false" />
 
             <Space
                 android:layout_width="wrap_content"
@@ -167,8 +166,7 @@
             <TextView
                 android:id="@+id/goalWeight"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/goal" />
+                android:layout_height="wrap_content" />
 
             <Space
                 android:layout_width="wrap_content"
@@ -271,7 +269,7 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:hint="Weight goals"
-                        android:inputType="textPersonName" />
+                        android:inputType="number" />
 
                     <Button
                         android:id="@+id/buttonUnit"

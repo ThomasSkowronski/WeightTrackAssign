@@ -20,10 +20,6 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences mPrefs;
 
     //setup top and bottom bar
-
-    String name;
-    String goal = "Goal Weight: "+User.getInstance().getWeight()+ User.getInstance().getUnit();
-
     ImageButton mainbtn;
     Button entrybtn;
     ImageButton settbtn;
@@ -38,9 +34,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_scrn);
 
-        SharedPreferences mPrefs = getApplicationContext().getSharedPreferences("com.example.weighttracker_pref", 0);
-        name = mPrefs.getString("user_name", "user");
-        User.getInstance().setName(name);
+        //SharedPreferences mPrefs = getApplicationContext().getSharedPreferences("com.example.weighttracker_pref", 0);
+        //name = mPrefs.getString("user_name", "user");
+        //User.getInstance().setName(name);
 
 
         //setup top and bottom bar
@@ -48,8 +44,7 @@ public class MainActivity extends AppCompatActivity {
         goalTxt = (TextView) findViewById(R.id.goal);
         dateTxt = (TextView) findViewById(R.id.date);
 
-        nameTxt.setText(""+name);
-        goalTxt.setText(""+goal);
+        updateView();
 
         String date_n = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(new Date());
         dateTxt.setText(date_n);
@@ -70,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(),ActivitySett.class);
                 startActivity(i);
+
             }
         });
 
@@ -90,21 +86,16 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-
     }
 
-    protected void onPause() {
-        super.onPause();
-
-        SharedPreferences.Editor ed = mPrefs.edit();
-        ed.putString("user_name", name);
-        ed.apply();
+    protected void onStart() {
+        super.onStart();
+        updateView();
     }
 
-    protected void onResume() {
-        super.onResume();
-
-        name = mPrefs.getString("user_name", "user");
-        User.getInstance().setName(name);
+    public void updateView() {
+         nameTxt.setText(User.getInstance().getName());
+        goalTxt.setText("Goal: "+User.getInstance().getWeight()+User.getInstance().getUnit());
     }
+
 }
