@@ -28,11 +28,4 @@ public class User {
     public String getUnit() {
         return units;
     }
-
-    public static final User mainuser = new User();
-
-    public static User getInstance() {
-        return mainuser;
-    }
-
 }

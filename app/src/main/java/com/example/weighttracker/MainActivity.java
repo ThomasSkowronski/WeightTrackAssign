@@ -16,9 +16,8 @@ import java.util.Date;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-
-    private SharedPreferences mPrefs;
-
+    public static databaseHandler dbhandle;
+    public static User user;
     //setup top and bottom bar
     ImageButton mainbtn;
     Button entrybtn;
@@ -33,18 +32,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_scrn);
-
-        //SharedPreferences mPrefs = getApplicationContext().getSharedPreferences("com.example.weighttracker_pref", 0);
-        //name = mPrefs.getString("user_name", "user");
-        //User.getInstance().setName(name);
-
+        user = new User();
+        dbhandle = new databaseHandler(this);
 
         //setup top and bottom bar
         nameTxt = (TextView) findViewById(R.id.name);
         goalTxt = (TextView) findViewById(R.id.goal);
         dateTxt = (TextView) findViewById(R.id.date);
-
-        updateView();
 
         String date_n = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(new Date());
         dateTxt.setText(date_n);
@@ -86,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        updateView();
     }
 
     protected void onStart() {
@@ -94,8 +90,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateView() {
-         nameTxt.setText(User.getInstance().getName());
-        goalTxt.setText("Goal: "+User.getInstance().getWeight()+User.getInstance().getUnit());
+        nameTxt.setText(user.getName());
+        goalTxt.setText("Goal: "+user.getWeight()+user.getUnit());
     }
 
 }

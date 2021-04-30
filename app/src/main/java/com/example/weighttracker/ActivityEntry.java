@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -35,6 +36,9 @@ public class ActivityEntry extends AppCompatActivity {
     CalendarView cal;
     Button calDone;
     TextView dateview;
+    EditText weightEntertxt;
+
+    Button submit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,12 +118,25 @@ public class ActivityEntry extends AppCompatActivity {
             }
         });
 
+        weightEntertxt = (EditText) findViewById(R.id.weightEntertxt);
+
+        submit = findViewById(R.id.buttonSubmit);
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String date = String.valueOf(dateview.getText());
+                double weight = Double.parseDouble(String.valueOf(weightEntertxt.getText()));
+                Entry entry = new Entry(0, date, weight);
+                MainActivity.dbhandle.insert(entry);
+            }
+        });
+
         updateView();
     }
 
     public void updateView() {
-        nameTxt.setText(User.getInstance().getName());
-        goalTxt.setText("Goal: "+User.getInstance().getWeight()+User.getInstance().getUnit());
+        nameTxt.setText(MainActivity.user.getName());
+        goalTxt.setText("Goal: "+MainActivity.user.getWeight()+MainActivity.user.getUnit());
     }
 
     public void dateSelector(View view) {

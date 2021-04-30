@@ -17,13 +17,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class ActivitySett extends AppCompatActivity {
-
-    private SharedPreferences mPrefs;
-
     //setup the top and bottom bar
-    String name = User.getInstance().getName();;
-    double  weight = User.getInstance().getWeight();
-
     Button entrybtn;
     ImageButton mainbtn;
     ImageButton settbtn;
@@ -36,7 +30,7 @@ public class ActivitySett extends AppCompatActivity {
     //text fields for the settings
     //true = lbs | false = kg
     boolean units = true;
-    String curUnit = User.getInstance().getUnit();
+    String curUnit = MainActivity.user.getUnit();
 
     TextView userName;
     TextView goalWeight;
@@ -111,6 +105,9 @@ public class ActivitySett extends AppCompatActivity {
         editSett.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String name = MainActivity.user.getName();;
+                double  weight = MainActivity.user.getWeight();
+
                 editsettingsBack.setVisibility(View.VISIBLE);
                 nameedit.setText(name);
                 goaledit.setText(""+weight);
@@ -125,6 +122,9 @@ public class ActivitySett extends AppCompatActivity {
         backToSett.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String name = MainActivity.user.getName();;
+                double  weight = MainActivity.user.getWeight();
+
                 if (String.valueOf(nameedit.getText()) != name) {
                     name = String.valueOf(nameedit.getText());
                 }
@@ -141,14 +141,14 @@ public class ActivitySett extends AppCompatActivity {
 
         //swapping the unit used in the app
         unitswap = findViewById(R.id.buttonUnit);
-        unitswap.setText(User.getInstance().getUnit());
+        unitswap.setText(MainActivity.user.getUnit());
         unitswap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 units = !units;
                 unitSwapper();
                 unitswap.setText(curUnit);
-                goaledit.setText(""+User.getInstance().getWeight());
+                goaledit.setText(""+MainActivity.user.getWeight());
                 updateView();
             }
         });
@@ -157,8 +157,8 @@ public class ActivitySett extends AppCompatActivity {
     }
 
     public void updateUser(String s, double d) {
-        User.getInstance().setName(s);
-        User.getInstance().setWeight(d);
+        MainActivity.user.setName(s);
+        MainActivity.user.setWeight(d);
     }
 
     protected void onStart() {
@@ -175,24 +175,24 @@ public class ActivitySett extends AppCompatActivity {
     }
 
     public void unitSwapper() {
-        double temp = User.getInstance().getWeight();
+        double temp = MainActivity.user.getWeight();
         if (units) {
-            User.getInstance().setUnits("lbs");
-            User.getInstance().setWeight(temp/2.205);
+            MainActivity.user.setUnits("lbs");
+            MainActivity.user.setWeight(temp/2.205);
             curUnit = "lbs";
         } else {
-            User.getInstance().setUnits("kg");
-            User.getInstance().setWeight(temp*2.205);
+            MainActivity.user.setUnits("kg");
+            MainActivity.user.setWeight(temp*2.205);
             curUnit = "kg";
         }
 
     }
 
     public void updateView() {
-        nameTxt.setText(User.getInstance().getName());
-        goalTxt.setText("Goal: "+User.getInstance().getWeight()+User.getInstance().getUnit());
-        userName.setText(name);
-        goalWeight.setText(""+weight+curUnit);
+        nameTxt.setText(MainActivity.user.getName());
+        goalTxt.setText("Goal: "+MainActivity.user.getWeight()+MainActivity.user.getUnit());
+        userName.setText(MainActivity.user.getName());
+        goalWeight.setText(""+MainActivity.user.getWeight()+curUnit);
     }
 
 }

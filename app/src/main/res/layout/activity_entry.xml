@@ -87,6 +87,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:backgroundTint="@color/elem_col"
             android:text="Entry" />
 
         <ImageButton
@@ -117,7 +118,7 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="0"
             android:background="@color/prime_back">
 
@@ -131,7 +132,7 @@
                 android:textAlignment="viewEnd" />
 
             <EditText
-                android:id="@+id/textView3"
+                android:id="@+id/weightEntertxt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
@@ -141,7 +142,7 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="0"
             android:background="@color/prime_back">
 
@@ -199,7 +200,7 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="0"
             android:background="@color/prime_back">
 
@@ -211,6 +212,20 @@
                 android:layout_weight="1"
                 android:paddingTop="20dp"
                 android:paddingBottom="20dp" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <Button
+                android:id="@+id/buttonSubmit"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@color/elem_col"
+                android:text="Submit" />
         </TableRow>
 
     </TableLayout>
