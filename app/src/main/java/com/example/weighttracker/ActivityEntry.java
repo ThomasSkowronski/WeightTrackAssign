@@ -1,18 +1,18 @@
 package com.example.weighttracker;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -34,6 +34,7 @@ public class ActivityEntry extends AppCompatActivity {
     //elements specific to the entry page
     ConstraintLayout calLayout;
     CalendarView cal;
+    long dateMilli;
     Button calDone;
     TextView dateview;
     EditText weightEntertxt;
@@ -99,6 +100,7 @@ public class ActivityEntry extends AppCompatActivity {
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(year, month, dayOfMonth);
                 String sDate = sdf.format(calendar.getTime());
+                dateMilli = calendar.getTimeInMillis();
                 dateview.setText(sDate);
             }
         });
@@ -124,10 +126,19 @@ public class ActivityEntry extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String date = String.valueOf(dateview.getText());
-                double weight = Double.parseDouble(String.valueOf(weightEntertxt.getText()));
-                Entry entry = new Entry(0, date, weight);
-                MainActivity.dbhandle.insert(entry);
+                Context context = getApplicationContext();
+                CharSequence message = "Must enter values for the weight and date.";
+                int dur = Toast.LENGTH_SHORT;
+                try {
+                    if (dateMilli == 0){ weightEntertxt.setText(""); }
+                    double weight = Double.parseDouble(String.valueOf(weightEntertxt.getText()));
+                    Entry entry = new Entry(0, dateMilli, weight);
+                    MainActivity.dbhandle.insert(entry);
+                } catch (Exception e){
+                    Toast.makeText(context,message,dur).show();
+                }
+                dateview.setText("Date");
+                weightEntertxt.setText("");
             }
         });
 

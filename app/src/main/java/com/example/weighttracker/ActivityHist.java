@@ -1,16 +1,19 @@
 package com.example.weighttracker;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.Space;
+import android.widget.TableRow;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,6 +23,9 @@ import java.util.Locale;
 public class ActivityHist extends AppCompatActivity {
 
     //setup top and bottom bar
+    int prime = Color.parseColor("#BAFFD9");
+    int elem = Color.parseColor("#58CC8D");
+
     ImageButton mainbtn;
     Button entrybtn;
     ImageButton settbtn;
@@ -98,12 +104,50 @@ public class ActivityHist extends AppCompatActivity {
         nameTxt.setText(MainActivity.user.getName());
         goalTxt.setText("Goal: "+MainActivity.user.getWeight()+MainActivity.user.getUnit());
 
+        //adds the entries from the database onto the history screen
+        histScroll.removeAllViews();
+
+        final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        LinearLayout.LayoutParams params = new LayoutParams(0, 128);
+        params.weight = 1;
+        params.topMargin = 24;
+
         ArrayList<Entry> entries = MainActivity.dbhandle.selectAll();
         for (Entry entry : entries) {
-            TextView tv = new TextView(this);
-            tv.setId(entry.getId());
-            tv.setText("Date: "+entry.getDate()+" Weight: "+entry.getWeight());
-            histScroll.addView(tv);
+            LinearLayout row = new LinearLayout(this);
+
+            TextView tvDate = new TextView(this);
+            tvDate.setId(entry.getId());
+            tvDate.setText("Date: "+sdf.format(entry.getDate()));
+            tvDate.setBackgroundColor(prime);
+            tvDate.setLayoutParams(params);
+
+            row.addView(tvDate);
+
+            TextView tvWeight = new TextView(this);
+            tvWeight.setId(entry.getId());
+            tvWeight.setText(" Weight: "+entry.getWeight());
+            tvWeight.setBackgroundColor(prime);
+            tvWeight.setLayoutParams(params);
+
+            row.addView(tvWeight);
+
+            ImageButton edit = new ImageButton(this);
+            edit.setImageResource(R.drawable.trash);
+            edit.setBackgroundColor(prime);
+            edit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MainActivity.dbhandle.deleteId(entry.getId());
+                    updateView();
+                }
+            });
+            edit.setLayoutParams(params);
+
+            row.addView(edit);
+
+
+            histScroll.addView(row);
         }
     }
 }

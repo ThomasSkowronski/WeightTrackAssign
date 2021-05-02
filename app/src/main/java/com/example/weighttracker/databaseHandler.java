@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.sql.Date;
 import java.util.ArrayList;
 
 public class databaseHandler extends SQLiteOpenHelper {
@@ -23,7 +24,7 @@ public class databaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String sqlCreate = "create table "+TABLE+"( "+ID;
         sqlCreate += " integer primary key autoincrement, "+DATE;
-        sqlCreate += " date, "+WEIGHT+" real )";
+        sqlCreate += " int, "+WEIGHT+" real )";
 
         db.execSQL(sqlCreate);
     }
@@ -56,14 +57,14 @@ public class databaseHandler extends SQLiteOpenHelper {
     //public void updateID () { }
 
     public ArrayList<Entry> selectAll() {
-        String sqlSel = "select * from " + TABLE;
+        String sqlSel = "select * from " + TABLE + " order by "+DATE+" desc";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor c = db.rawQuery( sqlSel, null);
 
         ArrayList<Entry> entries = new ArrayList<Entry>();
         while (c.moveToNext()) {
-            Entry currentEntry = new Entry(Integer.parseInt(c.getString(0) ), c.getString(1), c.getDouble(2));
+            Entry currentEntry = new Entry(Integer.parseInt(c.getString(0) ), Long.parseLong(c.getString(1)), c.getDouble(2));
             entries.add(currentEntry);
         }
         db.close();
@@ -78,8 +79,9 @@ public class databaseHandler extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(sqlSel, null);
 
         Entry entry = null;
-        if (c.moveToFirst())
-            entry = new Entry(Integer.parseInt(c.getString(0) ), c.getString(1), c.getDouble(2));
+        if (c.moveToFirst()) {
+            entry = new Entry(Integer.parseInt(c.getString(0)) , Long.parseLong(c.getString(1)), c.getDouble(2));
+        }
 
         return entry;
     }

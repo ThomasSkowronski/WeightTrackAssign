@@ -105,12 +105,7 @@ public class ActivitySett extends AppCompatActivity {
         editSett.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name = MainActivity.user.getName();;
-                double  weight = MainActivity.user.getWeight();
-
-                editsettingsBack.setVisibility(View.VISIBLE);
-                nameedit.setText(name);
-                goaledit.setText(""+weight);
+                showEditWindow();
             }
         });
 
@@ -123,14 +118,14 @@ public class ActivitySett extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String name = MainActivity.user.getName();;
-                double  weight = MainActivity.user.getWeight();
+                float  weight = MainActivity.user.getWeight();
 
                 if (String.valueOf(nameedit.getText()) != name) {
                     name = String.valueOf(nameedit.getText());
                 }
 
-                if (Double.parseDouble(String.valueOf(goaledit.getText())) != weight) {
-                    weight = Double.parseDouble(String.valueOf(goaledit.getText()));
+                if (Float.parseFloat(String.valueOf(goaledit.getText())) != weight) {
+                    weight = Float.parseFloat(String.valueOf(goaledit.getText()));
                 }
 
                 updateUser(name, weight);
@@ -145,20 +140,30 @@ public class ActivitySett extends AppCompatActivity {
         unitswap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                units = !units;
-                unitSwapper();
-                unitswap.setText(curUnit);
-                goaledit.setText(""+MainActivity.user.getWeight());
-                updateView();
             }
         });
 
-        updateView();
+        //if the user is new, goes straight to the edit page
+        if (MainActivity.user.isNew()){
+            showEditWindow();
+            MainActivity.user.setNew(false);
+        }
     }
 
-    public void updateUser(String s, double d) {
+    private void showEditWindow() {
+            String name = MainActivity.user.getName();;
+            double  weight = MainActivity.user.getWeight();
+
+            editsettingsBack.setVisibility(View.VISIBLE);
+            nameedit.setText(name);
+            goaledit.setText(""+weight);
+    }
+
+    public void updateUser(String s, float d) {
         MainActivity.user.setName(s);
         MainActivity.user.setWeight(d);
+
+        MainActivity.user.setPrefs(this);
     }
 
     protected void onStart() {
@@ -178,11 +183,11 @@ public class ActivitySett extends AppCompatActivity {
         double temp = MainActivity.user.getWeight();
         if (units) {
             MainActivity.user.setUnits("lbs");
-            MainActivity.user.setWeight(temp/2.205);
+            MainActivity.user.setWeight((float) (temp/2.205));
             curUnit = "lbs";
         } else {
             MainActivity.user.setUnits("kg");
-            MainActivity.user.setWeight(temp*2.205);
+            MainActivity.user.setWeight((float) (temp*2.205));
             curUnit = "kg";
         }
 
