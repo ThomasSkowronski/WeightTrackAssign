@@ -85,4 +85,19 @@ public class databaseHandler extends SQLiteOpenHelper {
 
         return entry;
     }
+
+    public Entry mostRecent () {
+        String sqlSel = "select * from "+TABLE;
+        sqlSel += " order by "+DATE+" desc";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor c = db.rawQuery(sqlSel, null);
+
+        Entry entry = null;
+        if (c.moveToFirst()) {
+            entry = new Entry(Integer.parseInt(c.getString(0)) , Long.parseLong(c.getString(1)), c.getDouble(2));
+        }
+
+        return entry;
+    }
 }

@@ -1,7 +1,6 @@
 package com.example.weighttracker;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -34,6 +33,7 @@ public class ActivitySett extends AppCompatActivity {
 
     TextView userName;
     TextView goalWeight;
+    TextView currHeight;
 
     ImageButton editSett;
     ImageButton backToSett;
@@ -42,6 +42,7 @@ public class ActivitySett extends AppCompatActivity {
 
     EditText nameedit;
     EditText goaledit;
+    EditText heightedit;
 
     ConstraintLayout editsettingsBack;
 
@@ -98,6 +99,7 @@ public class ActivitySett extends AppCompatActivity {
         //settings text views
         userName = (TextView) findViewById(R.id.userName);
         goalWeight = (TextView) findViewById(R.id.goalWeight);
+        currHeight = (TextView) findViewById(R.id.currHeight);
 
         editsettingsBack = (ConstraintLayout) findViewById(R.id.editSettings);
 
@@ -109,8 +111,10 @@ public class ActivitySett extends AppCompatActivity {
             }
         });
 
+        //edit texts for the change setting menu popup
         nameedit = (EditText) findViewById(R.id.nameEditTxt);
         goaledit = (EditText) findViewById(R.id.goalEditTxt);
+        heightedit = (EditText) findViewById(R.id.heightEditTxt);
 
         //clicking the arrow in the settings popup saves those values to the user
         backToSett = findViewById(R.id.backToSett);
@@ -119,6 +123,7 @@ public class ActivitySett extends AppCompatActivity {
             public void onClick(View v) {
                 String name = MainActivity.user.getName();;
                 float  weight = MainActivity.user.getWeight();
+                float height = MainActivity.user.getHeight();
 
                 if (String.valueOf(nameedit.getText()) != name) {
                     name = String.valueOf(nameedit.getText());
@@ -128,7 +133,11 @@ public class ActivitySett extends AppCompatActivity {
                     weight = Float.parseFloat(String.valueOf(goaledit.getText()));
                 }
 
-                updateUser(name, weight);
+                if (Float.parseFloat(String.valueOf(heightedit.getText())) != height) {
+                    height = Float.parseFloat(String.valueOf(heightedit.getText()));
+                }
+
+                updateUser(name, weight, height);
                 updateView();
                 editsettingsBack.setVisibility(View.INVISIBLE);
             }
@@ -153,15 +162,18 @@ public class ActivitySett extends AppCompatActivity {
     private void showEditWindow() {
             String name = MainActivity.user.getName();;
             double  weight = MainActivity.user.getWeight();
+            float height = MainActivity.user.getHeight();
 
             editsettingsBack.setVisibility(View.VISIBLE);
             nameedit.setText(name);
             goaledit.setText(""+weight);
+            heightedit.setText(""+height);
     }
 
-    public void updateUser(String s, float d) {
+    public void updateUser(String s, float w, float h) {
         MainActivity.user.setName(s);
-        MainActivity.user.setWeight(d);
+        MainActivity.user.setWeight(w);
+        MainActivity.user.setHeight(h);
 
         MainActivity.user.setPrefs(this);
     }
@@ -198,6 +210,7 @@ public class ActivitySett extends AppCompatActivity {
         goalTxt.setText("Goal: "+MainActivity.user.getWeight()+MainActivity.user.getUnit());
         userName.setText(MainActivity.user.getName());
         goalWeight.setText(""+MainActivity.user.getWeight()+curUnit);
+        currHeight.setText(""+MainActivity.user.getHeight()+"m");
     }
 
 }

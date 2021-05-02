@@ -33,6 +33,13 @@ public class MainActivity extends AppCompatActivity {
     TextView goalTxt;
     TextView dateTxt;
 
+    //setup screen specific views
+    TextView curWeight;
+    TextView goalWeightMain;
+    TextView bmicur;
+    TextView weekAvg;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
             dialog.show();
         }
 
+        //Nav Buttons
+
         entrybtn = findViewById(R.id.buttonEntry);
         entrybtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,7 +117,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //Main Page Info
+        curWeight = (TextView) findViewById(R.id.curWeight);
+        goalWeightMain = (TextView) findViewById(R.id.goalWeightMain);
+        bmicur = (TextView) findViewById(R.id.bmiCur);
+        weekAvg = (TextView) findViewById(R.id.weekAvg);
+
         updateView();
+
     }
 
     protected void onStart() {
@@ -119,6 +135,31 @@ public class MainActivity extends AppCompatActivity {
     public void updateView() {
         nameTxt.setText(user.getName());
         goalTxt.setText("Goal: "+user.getWeight()+user.getUnit());
+
+        //Main info box
+        String CURR_WEIGHT = "Current Weight: ";
+        String GOAL_MAIN = "Goal Weight: ";
+        String BMI = "Current BMI: ";
+        String WEEK_AVG = "Weekly Average: ";
+        double bmi;
+        double curweight;
+
+        try {
+            bmi = dbhandle.mostRecent().getWeight() / (MainActivity.user.getHeight()*MainActivity.user.getHeight());
+        } catch (Exception e) {
+            bmi = 0;
+        }
+
+        try {
+            curweight = dbhandle.mostRecent().getWeight();
+        } catch (Exception e) {
+            curweight = 0;
+        }
+
+        curWeight.setText(CURR_WEIGHT+curweight);
+        goalWeightMain.setText(GOAL_MAIN+MainActivity.user.getWeight());
+        bmicur.setText(BMI+bmi);
+        weekAvg.setText(WEEK_AVG);
     }
 }
 

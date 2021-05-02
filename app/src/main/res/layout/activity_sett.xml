@@ -122,15 +122,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
             <TextView
                 android:id="@+id/textView6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Name: "
                 android:textAlignment="viewEnd" />
 
@@ -138,40 +134,50 @@
                 android:id="@+id/userName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:focusable="auto"
                 android:focusableInTouchMode="false" />
 
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
             <TextView
                 android:id="@+id/textView8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Goal Weight: "
                 android:textAlignment="viewEnd" />
 
             <TextView
                 android:id="@+id/goalWeight"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
 
-            <Space
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Height: "
+                android:textAlignment="viewEnd" />
+
+            <TextView
+                android:id="@+id/currHeight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
+
         </TableRow>
 
         <Space
@@ -269,6 +275,14 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:hint="Weight goals"
+                        android:inputType="number" />
+
+                    <EditText
+                        android:id="@+id/heightEditTxt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="Height"
                         android:inputType="number" />
 
                     <Button
