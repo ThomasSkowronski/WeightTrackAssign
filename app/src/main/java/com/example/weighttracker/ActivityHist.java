@@ -1,20 +1,30 @@
 package com.example.weighttracker;
 
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.Space;
-import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
+import java.io.File;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,8 +33,13 @@ import java.util.Locale;
 public class ActivityHist extends AppCompatActivity {
 
     //setup top and bottom bar
+    ImageView profPic;
+
     int prime = Color.parseColor("#BAFFD9");
     int elem = Color.parseColor("#58CC8D");
+
+    DecimalFormat decimal = new DecimalFormat("#.#");
+
 
     ImageButton mainbtn;
     Button entrybtn;
@@ -38,7 +53,8 @@ public class ActivityHist extends AppCompatActivity {
     //setup screen specific elements
     LinearLayout histScroll;
 
-    int entries = 0;
+    FrameLayout histViewer;
+    ImageView histImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +62,7 @@ public class ActivityHist extends AppCompatActivity {
         setContentView(R.layout.activity_hist);
 
         //setup top and bottom bar
+        profPic = (ImageView) findViewById(R.id.profPic);
         nameTxt = (TextView) findViewById(R.id.name);
         goalTxt = (TextView) findViewById(R.id.goal);
         dateTxt = (TextView) findViewById(R.id.date);
@@ -91,6 +108,14 @@ public class ActivityHist extends AppCompatActivity {
         });
 
         histScroll = (LinearLayout) findViewById(R.id.histScrollLayout);
+        histViewer = (FrameLayout) findViewById(R.id.histViewer);
+        histViewer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                histViewer.setVisibility(View.INVISIBLE);
+            }
+        });
+        histImg = (ImageView) findViewById(R.id.histImg);
 
 
     }
@@ -101,51 +126,149 @@ public class ActivityHist extends AppCompatActivity {
     }
 
     public void updateView() {
+        //set the profile picture
+        try {
+            File dir = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            String filename = "ProfilePic";
+            Drawable draw = new Drawable() {
+                @Override
+                public void draw(@NonNull Canvas canvas) {
+
+                }
+
+                @Override
+                public void setAlpha(int alpha) {
+
+                }
+
+                @Override
+                public void setColorFilter(@Nullable ColorFilter colorFilter) {
+
+                }
+
+                @Override
+                public int getOpacity() {
+                    return PixelFormat.OPAQUE;
+                }
+            }.createFromPath(dir+filename);
+            profPic.setImageDrawable(draw);
+            profPic.setBackgroundColor(prime);
+        } catch (Exception e) {
+            profPic.setImageBitmap(null);
+        }
+
+        //get user values as strings to input into text views
+        String weight = decimal.format(MainActivity.user.getWeight());
+        String units = MainActivity.user.getWeightString();
+
         nameTxt.setText(MainActivity.user.getName());
-        goalTxt.setText("Goal: "+MainActivity.user.getWeight()+MainActivity.user.getUnit());
+        goalTxt.setText("Goal: "+weight+units);
+
 
         //adds the entries from the database onto the history screen
         histScroll.removeAllViews();
 
-        final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-        LinearLayout.LayoutParams params = new LayoutParams(0, 128);
+        final SimpleDateFormat sdf = new SimpleDateFormat("MM.dd.YY");
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 128);
         params.weight = 1;
         params.topMargin = 24;
 
-        ArrayList<Entry> entries = MainActivity.dbhandle.selectAll();
-        for (Entry entry : entries) {
+        File dir = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        //loops thru the select all on the SQL to grab each entry in order by date
+        try {
+            ArrayList<Entry> entries = MainActivity.dbhandle.selectAll();
+            for (Entry entry : entries) {
+                LinearLayout row = new LinearLayout(this);
+
+                //date text for entries
+                TextView tvDate = new TextView(this);
+                tvDate.setId(entry.getId());
+                tvDate.setText(""+sdf.format(entry.getDate()));
+                tvDate.setBackgroundColor(prime);
+                tvDate.setLayoutParams(params);
+
+                row.addView(tvDate);
+
+                //weight text for entries
+                TextView tvWeight = new TextView(this);
+                tvWeight.setId(entry.getId());
+                if (MainActivity.user.getUnit()){
+                    tvWeight.setText(" Weight: "+entry.getKg());
+                } else if (!MainActivity.user.getUnit()){
+                    tvWeight.setText(" Weight: "+entry.getLbs());
+                }
+                tvWeight.setBackgroundColor(prime);
+                tvWeight.setLayoutParams(params);
+
+                row.addView(tvWeight);
+
+                //thumbnail pic for entries
+                ImageButton thumb = new ImageButton(this);
+                String filename = ""+entry.getId();
+                Drawable draw = new Drawable() {
+                    @Override
+                    public void draw(@NonNull Canvas canvas) {
+
+                    }
+
+                    @Override
+                    public void setAlpha(int alpha) {
+
+                    }
+
+                    @Override
+                    public void setColorFilter(@Nullable ColorFilter colorFilter) {
+
+                    }
+
+                    @Override
+                    public int getOpacity() {
+                        return PixelFormat.OPAQUE;
+                    }
+                }.createFromPath(dir+filename);
+                thumb.setImageDrawable(draw);
+                thumb.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                thumb.setLayoutParams(params);
+                thumb.setBackgroundColor(prime);
+
+                thumb.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        histViewer.setVisibility(View.VISIBLE);
+                        histImg.setImageDrawable(draw);
+                    }
+                });
+
+                row.addView(thumb);
+
+                ImageButton edit = new ImageButton(this);
+                edit.setImageResource(R.drawable.trash);
+                edit.setBackgroundColor(prime);
+                edit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        MainActivity.dbhandle.deleteId(entry.getId());
+                        updateView();
+                    }
+                });
+                edit.setLayoutParams(params);
+
+                row.addView(edit);
+
+
+                histScroll.addView(row);
+            }
+            //end for loop
+        } catch (Exception e) {
             LinearLayout row = new LinearLayout(this);
 
-            TextView tvDate = new TextView(this);
-            tvDate.setId(entry.getId());
-            tvDate.setText("Date: "+sdf.format(entry.getDate()));
-            tvDate.setBackgroundColor(prime);
-            tvDate.setLayoutParams(params);
+            TextView noEntry = new TextView(this);
+            noEntry.setBackgroundColor(prime);
+            noEntry.setLayoutParams(params);
+            noEntry.setText("There's no entries yet. Go add some!");
 
-            row.addView(tvDate);
-
-            TextView tvWeight = new TextView(this);
-            tvWeight.setId(entry.getId());
-            tvWeight.setText(" Weight: "+entry.getWeight());
-            tvWeight.setBackgroundColor(prime);
-            tvWeight.setLayoutParams(params);
-
-            row.addView(tvWeight);
-
-            ImageButton edit = new ImageButton(this);
-            edit.setImageResource(R.drawable.trash);
-            edit.setBackgroundColor(prime);
-            edit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    MainActivity.dbhandle.deleteId(entry.getId());
-                    updateView();
-                }
-            });
-            edit.setLayoutParams(params);
-
-            row.addView(edit);
-
+            row.addView(noEntry);
 
             histScroll.addView(row);
         }

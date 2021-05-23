@@ -1,29 +1,42 @@
 package com.example.weighttracker;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
 
+import java.io.File;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
+    //static values to be used across screens
     public static databaseHandler dbhandle;
     public static User user;
+    public static PhotoHandler photo;
 
     //setup top and bottom bar
+    int prime = Color.parseColor("#BAFFD9");
+    ImageView profPic;
+    DecimalFormat decimal = new DecimalFormat("#.#");
+
     ImageButton mainbtn;
     Button entrybtn;
     ImageButton settbtn;
@@ -48,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         dbhandle = new databaseHandler(this);
 
         //setup top and bottom bar
+        profPic = (ImageView) findViewById(R.id.profPic);
         nameTxt = (TextView) findViewById(R.id.name);
         goalTxt = (TextView) findViewById(R.id.goal);
         dateTxt = (TextView) findViewById(R.id.date);
@@ -133,8 +147,44 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateView() {
+        //set the profile picture
+        try {
+            File dir = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            String filename = "ProfilePic";
+            Drawable draw = new Drawable() {
+                @Override
+                public void draw(@NonNull Canvas canvas) {
+
+                }
+
+                @Override
+                public void setAlpha(int alpha) {
+
+                }
+
+                @Override
+                public void setColorFilter(@Nullable ColorFilter colorFilter) {
+
+                }
+
+                @Override
+                public int getOpacity() {
+                    return PixelFormat.OPAQUE;
+                }
+            }.createFromPath(dir+filename);
+            profPic.setImageDrawable(draw);
+            profPic.setBackgroundColor(prime);
+        } catch (Exception e) {
+            profPic.setImageBitmap(null);
+        }
+
+
+        //get user values as strings to input into text views
+        String weight = decimal.format(MainActivity.user.getWeight());
+        String units = MainActivity.user.getWeightString();
+
         nameTxt.setText(user.getName());
-        goalTxt.setText("Goal: "+user.getWeight()+user.getUnit());
+        goalTxt.setText("Goal: "+weight+units);
 
         //Main info box
         String CURR_WEIGHT = "Current Weight: ";
@@ -145,20 +195,29 @@ public class MainActivity extends AppCompatActivity {
         double curweight;
 
         try {
-            bmi = dbhandle.mostRecent().getWeight() / (MainActivity.user.getHeight()*MainActivity.user.getHeight());
+            if (MainActivity.user.getUnit()){
+                bmi = dbhandle.mostRecent().getKg() / (MainActivity.user.getHeight()*MainActivity.user.getHeight());
+            } else {
+                double temp = MainActivity.user.getHeight()/3.281;
+                bmi = dbhandle.mostRecent().getKg() / (temp*temp);
+            }
         } catch (Exception e) {
             bmi = 0;
         }
 
         try {
-            curweight = dbhandle.mostRecent().getWeight();
+            if (MainActivity.user.getUnit()) {
+                curweight = dbhandle.mostRecent().getKg();
+            } else {
+                curweight = dbhandle.mostRecent().getLbs();
+            }
         } catch (Exception e) {
-            curweight = 0;
+            curweight = 0.0;
         }
 
-        curWeight.setText(CURR_WEIGHT+curweight);
-        goalWeightMain.setText(GOAL_MAIN+MainActivity.user.getWeight());
-        bmicur.setText(BMI+bmi);
+        curWeight.setText(CURR_WEIGHT+decimal.format(curweight)+units);
+        goalWeightMain.setText(GOAL_MAIN+weight+units);
+        bmicur.setText(BMI+decimal.format(bmi));
         weekAvg.setText(WEEK_AVG);
     }
 }

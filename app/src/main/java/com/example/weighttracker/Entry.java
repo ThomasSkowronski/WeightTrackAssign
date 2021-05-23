@@ -1,23 +1,25 @@
 package com.example.weighttracker;
 
-import java.util.Date;
-
 public class Entry {
-    private double weight;
+    private double kg;
+    private double lbs;
     private long date;
     private int id;
 
-    public Entry (int i, long d, double w) {
+    public Entry (int i, long d, double k,double lb) {
         id = i;
-        weight = w;
+        kg = k;
+        lbs = lb;
         date = d;
     }
 
-    public void setWeight(double d) { this.weight = d; }
+    public double getKg () { return kg; }
 
-    public double getWeight() {
-        return weight;
-    }
+    public void setKg(double kg) { this.kg = kg; }
+
+    public double getLbs() { return lbs; }
+
+    public void setLbs(double lbs) { this.lbs = lbs; }
 
     public void setDate(long s) { this.date = s; }
 

@@ -1,22 +1,44 @@
 package com.example.weighttracker;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 public class ActivitySett extends AppCompatActivity {
     //setup the top and bottom bar
+    int prime = Color.parseColor("#BAFFD9");
+    ImageView profPic;
+
+    DecimalFormat decimal = new DecimalFormat("#.#");
+
     Button entrybtn;
     ImageButton mainbtn;
     ImageButton settbtn;
@@ -27,9 +49,8 @@ public class ActivitySett extends AppCompatActivity {
     TextView dateTxt;
 
     //text fields for the settings
-    //true = lbs | false = kg
+    //true = kgs | false = lbs
     boolean units = true;
-    String curUnit = MainActivity.user.getUnit();
 
     TextView userName;
     TextView goalWeight;
@@ -46,12 +67,16 @@ public class ActivitySett extends AppCompatActivity {
 
     ConstraintLayout editsettingsBack;
 
+    Button camButton;
+    private Bitmap bitmap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sett);
 
         //setup the top and bottom bar
+        profPic = (ImageView) findViewById(R.id.profPic);
         nameTxt = (TextView) findViewById(R.id.name);
         goalTxt = (TextView) findViewById(R.id.goal);
         dateTxt = (TextView) findViewById(R.id.date);
@@ -124,6 +149,7 @@ public class ActivitySett extends AppCompatActivity {
                 String name = MainActivity.user.getName();;
                 float  weight = MainActivity.user.getWeight();
                 float height = MainActivity.user.getHeight();
+                boolean curUnit = MainActivity.user.getUnit();
 
                 if (String.valueOf(nameedit.getText()) != name) {
                     name = String.valueOf(nameedit.getText());
@@ -137,7 +163,7 @@ public class ActivitySett extends AppCompatActivity {
                     height = Float.parseFloat(String.valueOf(heightedit.getText()));
                 }
 
-                updateUser(name, weight, height);
+                updateUser(name, weight, height, curUnit);
                 updateView();
                 editsettingsBack.setVisibility(View.INVISIBLE);
             }
@@ -145,10 +171,39 @@ public class ActivitySett extends AppCompatActivity {
 
         //swapping the unit used in the app
         unitswap = findViewById(R.id.buttonUnit);
-        unitswap.setText(MainActivity.user.getUnit());
+
         unitswap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String name = MainActivity.user.getName();;
+                float  weight = MainActivity.user.getWeight();
+                float height = MainActivity.user.getHeight();
+                boolean curUnit = MainActivity.user.getUnit();
+                if (curUnit) {
+                    curUnit = false;
+                    weight = (float) (weight*2.205);
+                    height = (float) (height*3.281);
+                } else if (!curUnit) {
+                    curUnit = true;
+                    weight = (float) (weight/2.205);
+                    height = (float) (height/3.281);
+                }
+                updateUser(name, weight, height, curUnit);
+                updateView();
+            }
+        });
+
+        //camera button
+        PackageManager manager = this.getPackageManager();
+
+        camButton = findViewById(R.id.camButton);
+        camButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (manager.hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+                    Intent takePic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(takePic, 1);
+                }
             }
         });
 
@@ -159,10 +214,30 @@ public class ActivitySett extends AppCompatActivity {
         }
     }
 
+    protected void onActivityResult (int request, int result, Intent data) {
+        super.onActivityResult(request, result, data);
+        if (request == 1 && result == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            bitmap = (Bitmap) extras.get ("data");
+            saveProfPic();
+        }
+    }
+
+    private void saveProfPic() {
+        Log.d("Prof pic", "entered save pic class");
+
+        try {
+            MainActivity.photo.writeProfilePic(this, bitmap);
+            Toast.makeText(this, "saved pic", Toast.LENGTH_LONG).show();
+        } catch (IOException e){
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
     private void showEditWindow() {
             String name = MainActivity.user.getName();;
             double  weight = MainActivity.user.getWeight();
-            float height = MainActivity.user.getHeight();
+            double height = MainActivity.user.getHeight();
 
             editsettingsBack.setVisibility(View.VISIBLE);
             nameedit.setText(name);
@@ -170,13 +245,15 @@ public class ActivitySett extends AppCompatActivity {
             heightedit.setText(""+height);
     }
 
-    public void updateUser(String s, float w, float h) {
+    public void updateUser(String s, float w, float h, boolean u) {
         MainActivity.user.setName(s);
         MainActivity.user.setWeight(w);
         MainActivity.user.setHeight(h);
+        MainActivity.user.setUnits(u);
 
         MainActivity.user.setPrefs(this);
     }
+
 
     protected void onStart() {
         super.onStart();
@@ -191,26 +268,56 @@ public class ActivitySett extends AppCompatActivity {
         super.onResume();
     }
 
-    public void unitSwapper() {
-        double temp = MainActivity.user.getWeight();
-        if (units) {
-            MainActivity.user.setUnits("lbs");
-            MainActivity.user.setWeight((float) (temp/2.205));
-            curUnit = "lbs";
-        } else {
-            MainActivity.user.setUnits("kg");
-            MainActivity.user.setWeight((float) (temp*2.205));
-            curUnit = "kg";
+    public void updateView() {
+        //set the profile picture
+        try {
+            File dir = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            String filename = "ProfilePic";
+            Drawable draw = new Drawable() {
+                @Override
+                public void draw(@NonNull Canvas canvas) {
+
+                }
+
+                @Override
+                public void setAlpha(int alpha) {
+
+                }
+
+                @Override
+                public void setColorFilter(@Nullable ColorFilter colorFilter) {
+
+                }
+
+                @Override
+                public int getOpacity() {
+                    return PixelFormat.OPAQUE;
+                }
+            }.createFromPath(dir+filename);
+            profPic.setImageDrawable(draw);
+            profPic.setBackgroundColor(prime);
+        } catch (Exception e) {
+            profPic.setImageBitmap(null);
         }
 
-    }
+        //get user values as strings to input into text views
+        String weight = decimal.format(MainActivity.user.getWeight());
+        String units = MainActivity.user.getWeightString();
+        String unitH = MainActivity.user.getHeightString();
+        String height = decimal.format(MainActivity.user.getHeight());
 
-    public void updateView() {
         nameTxt.setText(MainActivity.user.getName());
-        goalTxt.setText("Goal: "+MainActivity.user.getWeight()+MainActivity.user.getUnit());
+        goalTxt.setText("Goal: "+weight+units);
         userName.setText(MainActivity.user.getName());
-        goalWeight.setText(""+MainActivity.user.getWeight()+curUnit);
-        currHeight.setText(""+MainActivity.user.getHeight()+"m");
+        goalWeight.setText(""+weight+units);
+
+        currHeight.setText(""+height+unitH);
+
+        if (MainActivity.user.getUnit()) {
+            unitswap.setText("Kgs/M");
+        } else if (!MainActivity.user.getUnit()) {
+            unitswap.setText("Lbs/Ft");
+        }
     }
 
 }

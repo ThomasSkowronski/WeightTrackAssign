@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.sql.Date;
 import java.util.ArrayList;
 
 public class databaseHandler extends SQLiteOpenHelper {
@@ -14,7 +13,8 @@ public class databaseHandler extends SQLiteOpenHelper {
     private static final String TABLE = "entries";
     private static final String ID = "id";
     private static final String DATE = "date";
-    private static final String WEIGHT = "weight";
+    private static final String LBS = "pounds";
+    private static final String KG = "kilos";
 
     public databaseHandler(Context context) {
         super(context, DB_NAME, null, DB_VER);
@@ -24,7 +24,7 @@ public class databaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String sqlCreate = "create table "+TABLE+"( "+ID;
         sqlCreate += " integer primary key autoincrement, "+DATE;
-        sqlCreate += " int, "+WEIGHT+" real )";
+        sqlCreate += " int, "+KG+" real, "+LBS+" real"+")";
 
         db.execSQL(sqlCreate);
     }
@@ -39,7 +39,7 @@ public class databaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         String sqlIns = "insert into "+TABLE;
         sqlIns +=" values( null, " + entry.getDate();
-        sqlIns +=", "+entry.getWeight()+" )";
+        sqlIns +=", "+entry.getKg()+", "+entry.getLbs()+" )";
 
         db.execSQL(sqlIns);
         db.close();
@@ -64,7 +64,12 @@ public class databaseHandler extends SQLiteOpenHelper {
 
         ArrayList<Entry> entries = new ArrayList<Entry>();
         while (c.moveToNext()) {
-            Entry currentEntry = new Entry(Integer.parseInt(c.getString(0) ), Long.parseLong(c.getString(1)), c.getDouble(2));
+            Entry currentEntry = new Entry(
+                    Integer.parseInt(c.getString(0)),
+                    Long.parseLong(c.getString(1)),
+                    c.getDouble(2),
+                    c.getDouble(3)
+            );
             entries.add(currentEntry);
         }
         db.close();
@@ -80,13 +85,38 @@ public class databaseHandler extends SQLiteOpenHelper {
 
         Entry entry = null;
         if (c.moveToFirst()) {
-            entry = new Entry(Integer.parseInt(c.getString(0)) , Long.parseLong(c.getString(1)), c.getDouble(2));
+            entry = new Entry(
+                    Integer.parseInt(c.getString(0)),
+                    Long.parseLong(c.getString(1)),
+                    c.getDouble(2),
+                    c.getDouble(3)
+            );
         }
 
         return entry;
     }
 
     public Entry mostRecent () {
+        String sqlSel = "select * from "+TABLE;
+        sqlSel += " order by "+ID+" desc";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor c = db.rawQuery(sqlSel, null);
+
+        Entry entry = null;
+        if (c.moveToFirst()) {
+            entry = new Entry(
+                    Integer.parseInt(c.getString(0)),
+                    Long.parseLong(c.getString(1)),
+                    c.getDouble(2),
+                    c.getDouble(3)
+            );
+        }
+
+        return entry;
+    }
+
+    public Entry lastAdded () {
         String sqlSel = "select * from "+TABLE;
         sqlSel += " order by "+DATE+" desc";
 
@@ -95,7 +125,12 @@ public class databaseHandler extends SQLiteOpenHelper {
 
         Entry entry = null;
         if (c.moveToFirst()) {
-            entry = new Entry(Integer.parseInt(c.getString(0)) , Long.parseLong(c.getString(1)), c.getDouble(2));
+            entry = new Entry(
+                    Integer.parseInt(c.getString(0)),
+                    Long.parseLong(c.getString(1)),
+                    c.getDouble(2),
+                    c.getDouble(3)
+            );
         }
 
         return entry;
