@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".ActivitySett">
 
     <LinearLayout
@@ -20,7 +21,6 @@
             android:id="@+id/profPic"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:scaleType="fitCenter"
             android:layout_weight="1"
             app:srcCompat="@drawable/noimage" />
 
@@ -180,6 +180,26 @@
 
         </TableRow>
 
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textView85"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Goal Date: "
+                android:textAlignment="viewEnd" />
+
+            <TextView
+                android:id="@+id/currGoalDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+        </TableRow>
+
         <Space
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -188,19 +208,31 @@
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
             android:layout_marginLeft="32dp"
-            android:layout_marginRight="32dp">
+            android:layout_marginRight="32dp"
+            android:layout_marginBottom="32dp">
 
 
             <Button
                 android:id="@+id/camButton"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:backgroundTint="@color/elem_col"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:backgroundTint="@color/elem_col"
                 android:text="Change Profile picture" />
+
+            <Button
+                android:id="@+id/deleteProfPic"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="16dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/elem_col"
+                android:text="Delete Profile picture"
+                android:textSize="12dp" />
         </TableRow>
 
         <TableRow
@@ -310,8 +342,17 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:hint="Height"
-                        android:inputType="number" />
+                        android:inputType="numberDecimal" />
 
+                    <TextView
+                        android:id="@+id/goalDateEdit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:clickable="true"
+                        android:onClick="dateSelector"
+                        android:paddingTop="10dp"
+                        android:text="Date" />
 
 
                 </LinearLayout>

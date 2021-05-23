@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class databaseHandler extends SQLiteOpenHelper {
     private static final String DB_NAME = "weightEntries";
@@ -54,10 +55,54 @@ public class databaseHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    //public void updateID () { }
-
     public ArrayList<Entry> selectAll() {
         String sqlSel = "select * from " + TABLE + " order by "+DATE+" desc";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor c = db.rawQuery( sqlSel, null);
+
+        ArrayList<Entry> entries = new ArrayList<Entry>();
+        while (c.moveToNext()) {
+            Entry currentEntry = new Entry(
+                    Integer.parseInt(c.getString(0)),
+                    Long.parseLong(c.getString(1)),
+                    c.getDouble(2),
+                    c.getDouble(3)
+            );
+            entries.add(currentEntry);
+        }
+        db.close();
+        return entries;
+    }
+
+    public ArrayList<Entry> selectAllReverse() {
+        String sqlSel = "select * from " + TABLE + " order by "+DATE+" asc";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor c = db.rawQuery( sqlSel, null);
+
+        ArrayList<Entry> entries = new ArrayList<Entry>();
+        while (c.moveToNext()) {
+            Entry currentEntry = new Entry(
+                    Integer.parseInt(c.getString(0)),
+                    Long.parseLong(c.getString(1)),
+                    c.getDouble(2),
+                    c.getDouble(3)
+            );
+            entries.add(currentEntry);
+        }
+        db.close();
+        return entries;
+    }
+
+    public ArrayList<Entry> selectPastWeek() {
+        long recent = mostRecent().getDate();
+        long lastWk = recent-604800000;
+
+        String sqlSel = "select * from " + TABLE;
+        sqlSel+= " where " +DATE+" between "+lastWk+ " and "+recent;
+        sqlSel+= " order by "+DATE;
+
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor c = db.rawQuery( sqlSel, null);
@@ -98,7 +143,7 @@ public class databaseHandler extends SQLiteOpenHelper {
 
     public Entry mostRecent () {
         String sqlSel = "select * from "+TABLE;
-        sqlSel += " order by "+ID+" desc";
+        sqlSel += " order by "+DATE+" desc";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor c = db.rawQuery(sqlSel, null);

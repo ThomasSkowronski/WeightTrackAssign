@@ -10,12 +10,14 @@ public class User {
     private float height;
     private float weight;
     private boolean isNew;
+    private long date;
 
     private static final String PREF_NAME = "name";
     private static final String PREF_UNIT = "unit";
     private static final String PREF_HEIGHT = "height";
     private static final String PREF_WEIGHT = "weight";
     private static final String PREF_NEW = "new";
+    private static final String PREF_DATE = "date";
 
     public User (Context context) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
@@ -24,6 +26,7 @@ public class User {
         setHeight(pref.getFloat(PREF_HEIGHT, 0));
         setWeight(pref.getFloat(PREF_WEIGHT, 0));
         setNew(pref.getBoolean(PREF_NEW, true));
+        setDate(pref.getLong(PREF_DATE, 0));
     }
 
     public void setPrefs (Context context) {
@@ -34,8 +37,13 @@ public class User {
         editor.putFloat(PREF_HEIGHT, height);
         editor.putFloat(PREF_WEIGHT, weight);
         editor.putBoolean(PREF_NEW, isNew);
+        editor.putLong(PREF_DATE, date);
         editor.commit();
     }
+
+    public void setDate(long aLong) { date = aLong; }
+
+    public long getDate() { return date; }
 
     public boolean isNew() { return isNew; }
 

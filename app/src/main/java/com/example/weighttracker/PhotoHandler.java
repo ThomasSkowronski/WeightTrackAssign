@@ -46,6 +46,28 @@ public class PhotoHandler {
         }
     }
 
+    public static void deletePhoto (Activity a, String name) throws IOException {
+        String storageState = Environment.getExternalStorageState();
+
+        File file = null;
+        if (storageState.equals( Environment.MEDIA_MOUNTED ) ) {
+            //get the directory
+            File dir = a.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+            //Grab the name of the pic from the correct entry id
+            String filename = name;
+
+            file = new File (dir + filename);
+            if (file.exists()) {
+                file.delete();
+            } else {
+                throw new IOException("File does not exist");
+            }
+        } else {
+            throw new IOException("Cannot find Storage");
+        }
+    }
+
     public static File writeProfilePic (Activity a, Bitmap b) throws IOException{
         String storageState = Environment.getExternalStorageState();
 

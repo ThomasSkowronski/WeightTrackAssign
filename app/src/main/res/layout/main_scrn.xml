@@ -55,6 +55,13 @@
                 android:paddingLeft="24dp"
                 android:text="@string/weekAvg" />
 
+            <TextView
+                android:id="@+id/goalDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="24dp"
+                android:text="@string/weekAvg" />
+
         </LinearLayout>
 
         <FrameLayout
@@ -63,11 +70,12 @@
             android:layout_marginTop="24dp"
             android:background="@color/prime_back">
 
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="278dp"
-                android:layout_height="320dp"
-                app:srcCompat="@drawable/noimage" />
+            <com.jjoe64.graphview.GraphView
+                android:id="@+id/idGraphView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true" />
+
         </FrameLayout>
 
     </LinearLayout>
@@ -86,7 +94,6 @@
             android:id="@+id/profPic"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:scaleType="fitCenter"
             android:layout_weight="1"
             app:srcCompat="@drawable/noimage" />
 

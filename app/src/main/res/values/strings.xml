@@ -5,9 +5,11 @@
     \nDate: </string>
     <string name="username">Your Name</string>
     <string name="goal">goal weight</string>
-    <string name="settingsEditFields">"Name: \nGoal weight: \nHeight: "</string>
+    <string name="settingsEditFields">"Name: \nGoal weight: \nHeight: \nGoal Date: "</string>
     <string name="curWeight">"Current Weight: "</string>
     <string name="goalWeightMain">"Goal Weight: "</string>
     <string name="bmicur">"Current BMI: "</string>
     <string name="weekAvg">Weekly Average</string>
+    <string name="goalDate">Goal Date: </string>
+
 </resources>

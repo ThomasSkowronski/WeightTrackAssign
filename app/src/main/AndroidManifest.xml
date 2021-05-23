@@ -9,10 +9,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WeightTracker">
-        <activity android:name=".ActivityHist"></activity>
-        <activity android:name=".ActivitySett" />
-        <activity android:name=".ActivityEntry" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".ActivityHist"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".ActivitySett"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ActivityEntry"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

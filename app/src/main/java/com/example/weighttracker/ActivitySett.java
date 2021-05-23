@@ -1,5 +1,7 @@
 package com.example.weighttracker;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -14,6 +16,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -24,11 +27,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.DialogFragment;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -55,6 +60,7 @@ public class ActivitySett extends AppCompatActivity {
     TextView userName;
     TextView goalWeight;
     TextView currHeight;
+    TextView currGoalDate;
 
     ImageButton editSett;
     ImageButton backToSett;
@@ -70,6 +76,12 @@ public class ActivitySett extends AppCompatActivity {
     Button camButton;
     private Bitmap bitmap;
 
+    Button delProfPic;
+
+    //date picker
+    static TextView goalDatePick;
+    private static long goalDate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +92,9 @@ public class ActivitySett extends AppCompatActivity {
         nameTxt = (TextView) findViewById(R.id.name);
         goalTxt = (TextView) findViewById(R.id.goal);
         dateTxt = (TextView) findViewById(R.id.date);
+
+        currGoalDate = (TextView) findViewById(R.id.currGoalDate);
+
 
         String date_n = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(new Date());
         dateTxt.setText(date_n);
@@ -179,6 +194,7 @@ public class ActivitySett extends AppCompatActivity {
                 float  weight = MainActivity.user.getWeight();
                 float height = MainActivity.user.getHeight();
                 boolean curUnit = MainActivity.user.getUnit();
+
                 if (curUnit) {
                     curUnit = false;
                     weight = (float) (weight*2.205);
@@ -207,6 +223,22 @@ public class ActivitySett extends AppCompatActivity {
             }
         });
 
+        delProfPic = findViewById(R.id.deleteProfPic);
+        delProfPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    removePhoto("ProfilePic");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                updateView();
+            }
+        });
+
+        //date picker button
+        goalDatePick = (TextView) findViewById(R.id.goalDateEdit);
+
         //if the user is new, goes straight to the edit page
         if (MainActivity.user.isNew()){
             showEditWindow();
@@ -234,6 +266,10 @@ public class ActivitySett extends AppCompatActivity {
         }
     }
 
+    public void removePhoto(String s) throws IOException {
+        MainActivity.photo.deletePhoto(this, s);
+    }
+
     private void showEditWindow() {
             String name = MainActivity.user.getName();;
             double  weight = MainActivity.user.getWeight();
@@ -241,8 +277,8 @@ public class ActivitySett extends AppCompatActivity {
 
             editsettingsBack.setVisibility(View.VISIBLE);
             nameedit.setText(name);
-            goaledit.setText(""+weight);
-            heightedit.setText(""+height);
+            goaledit.setText(""+decimal.format(weight));
+            heightedit.setText(""+decimal.format(height));
     }
 
     public void updateUser(String s, float w, float h, boolean u) {
@@ -318,6 +354,51 @@ public class ActivitySett extends AppCompatActivity {
         } else if (!MainActivity.user.getUnit()) {
             unitswap.setText("Lbs/Ft");
         }
+
+        //date text handler
+        final SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy");
+        String sdate = sdf.format(MainActivity.user.getDate());
+        goalDatePick.setText(sdate);
+
+        currGoalDate.setText(sdate);
+
     }
 
+    public void dateSelector(View view) {
+        DialogFragment newFragment = new DatePickerFragment();
+        newFragment.show(getSupportFragmentManager(), "timePicker");
+    }
+
+    public static void setDate(long l) {
+        goalDate = l;
+        MainActivity.user.setDate(goalDate);
+    }
+
+    public static class DatePickerFragment extends DialogFragment
+            implements DatePickerDialog.OnDateSetListener {
+
+        long milli;
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current date as the default date in the picker
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            // Create a new instance of DatePickerDialog and return it
+            return new DatePickerDialog(getActivity(), this, year, month, day);
+        }
+
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(year, month, day);
+            milli = calendar.getTimeInMillis();
+            ActivitySett.setDate(milli);
+
+            final SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy");
+            String sDate = sdf.format(calendar.getTime());
+            ActivitySett.goalDatePick.setText(sDate);
+        }
+    }
 }

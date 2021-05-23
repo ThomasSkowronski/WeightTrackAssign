@@ -123,7 +123,7 @@ public class ActivityEntry extends AppCompatActivity {
 
             @Override
             public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+                final SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy");
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(year, month, dayOfMonth);
                 String sDate = sdf.format(calendar.getTime());
@@ -171,11 +171,12 @@ public class ActivityEntry extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Context context = getApplicationContext();
-                CharSequence message = "Must enter values for the weight and date.";
+                CharSequence message = "Must enter valid values for the weight and date.";
                 int dur = Toast.LENGTH_SHORT;
+                Date todays = new Date();
                 try {
                     //checks for valid input in the date field, if not clears the fields to reset the input
-                    if (dateMilli == 0){ weightEntertxt.setText(""); }
+                    if (dateMilli == 0 | dateMilli > todays.getTime()){ weightEntertxt.setText(""); }
 
                     double weightIn = Double.parseDouble(String.valueOf(weightEntertxt.getText()));
                     double kg = 0.0;

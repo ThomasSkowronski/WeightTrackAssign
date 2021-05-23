@@ -10,19 +10,27 @@ import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
+
 import java.io.File;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -52,6 +60,11 @@ public class MainActivity extends AppCompatActivity {
     TextView bmicur;
     TextView weekAvg;
 
+    TextView currGoalDate;
+
+    //Line graph
+    GraphView graphView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
         nameTxt = (TextView) findViewById(R.id.name);
         goalTxt = (TextView) findViewById(R.id.goal);
         dateTxt = (TextView) findViewById(R.id.date);
+
+        currGoalDate =(TextView) findViewById(R.id.goalDate);
+
 
         String date_n = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(new Date());
         dateTxt.setText(date_n);
@@ -137,6 +153,10 @@ public class MainActivity extends AppCompatActivity {
         bmicur = (TextView) findViewById(R.id.bmiCur);
         weekAvg = (TextView) findViewById(R.id.weekAvg);
 
+        //Line graph
+        graphView = findViewById(R.id.idGraphView);
+        graphView.setTitle("Weight Loss History");
+
         updateView();
 
     }
@@ -190,7 +210,9 @@ public class MainActivity extends AppCompatActivity {
         String CURR_WEIGHT = "Current Weight: ";
         String GOAL_MAIN = "Goal Weight: ";
         String BMI = "Current BMI: ";
-        String WEEK_AVG = "Weekly Average: ";
+        String WEEK_AVG = "Weekly Average Lost: ";
+        String GOAL_DATE = "Goal Date: ";
+
         double bmi;
         double curweight;
 
@@ -215,10 +237,51 @@ public class MainActivity extends AppCompatActivity {
             curweight = 0.0;
         }
 
+        double average = 0;
+        try {
+            ArrayList<Entry> lastWeek = MainActivity.dbhandle.selectPastWeek();
+            int pastWkEntries = lastWeek.size();
+            double runTotal;
+            if (MainActivity.user.getUnit()) {
+                runTotal = lastWeek.get(0).getKg()-lastWeek.get(lastWeek.size()-1).getKg();
+            } else {
+                runTotal = lastWeek.get(0).getLbs()-lastWeek.get(lastWeek.size()-1).getLbs();
+            }
+            average = runTotal/pastWkEntries;
+        } catch (Exception e) {
+            average = 0;
+        }
+
         curWeight.setText(CURR_WEIGHT+decimal.format(curweight)+units);
         goalWeightMain.setText(GOAL_MAIN+weight+units);
         bmicur.setText(BMI+decimal.format(bmi));
-        weekAvg.setText(WEEK_AVG);
+        weekAvg.setText(WEEK_AVG+decimal.format(average)+units);
+
+        final SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy");
+        String sDate = sdf.format(MainActivity.user.getDate());
+        currGoalDate.setText(GOAL_DATE+sDate);
+
+        //create the series to add to the graph
+        try {
+            ArrayList<Entry> entries = MainActivity.dbhandle.selectAllReverse();
+            Entry[] entriesList = entries.toArray(new Entry[entries.size()]);
+            LineGraphSeries<Entry> series = new LineGraphSeries<Entry>(entriesList);
+            graphView.addSeries(series);
+
+            graphView.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(this));
+            graphView.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
+            // set manual x bounds to have nice steps
+            graphView.getViewport().setMinX(entriesList[0].getX());
+            graphView.getViewport().setMaxX(entriesList[entries.size() - 1].getX());
+            graphView.getViewport().setXAxisBoundsManual(true);
+
+            // as we use dates as labels, the human rounding to nice readable numbers
+            // is not necessary
+            graphView.getGridLabelRenderer().setHumanRounding(false);
+        } catch (Exception e) {
+
+        }
+
     }
 }
 

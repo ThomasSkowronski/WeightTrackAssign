@@ -20,7 +20,6 @@
             android:id="@+id/profPic"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:scaleType="fitCenter"
             android:layout_weight="1"
             app:srcCompat="@drawable/noimage" />
 
@@ -162,7 +161,7 @@
                 android:clickable="true"
                 android:onClick="dateSelector"
                 android:paddingTop="10dp"
-                android:text="TextView" />
+                android:text="Date" />
         </TableRow>
 
         <TableRow
@@ -197,22 +196,6 @@
                     app:srcCompat="@drawable/camera" />
 
             </LinearLayout>
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0"
-            android:background="@color/prime_back">
-
-            <SeekBar
-                android:id="@+id/seekBar"
-                style="@style/Widget.AppCompat.SeekBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingTop="20dp"
-                android:paddingBottom="20dp" />
         </TableRow>
 
         <TableRow

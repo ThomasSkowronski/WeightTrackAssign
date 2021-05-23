@@ -1,6 +1,8 @@
 package com.example.weighttracker;
 
-public class Entry {
+import com.jjoe64.graphview.series.DataPointInterface;
+
+public class Entry implements DataPointInterface {
     private double kg;
     private double lbs;
     private long date;
@@ -26,4 +28,18 @@ public class Entry {
     public long getDate() { return date; }
 
     public int getId() { return id; }
+
+    @Override
+    public double getX() {
+        return date;
+    }
+
+    @Override
+    public double getY() {
+        if (MainActivity.user.getUnit()) {
+            return kg;
+        } else {
+            return lbs;
+        }
+    }
 }

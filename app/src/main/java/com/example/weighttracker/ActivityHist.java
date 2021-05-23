@@ -24,6 +24,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -168,7 +170,7 @@ public class ActivityHist extends AppCompatActivity {
         //adds the entries from the database onto the history screen
         histScroll.removeAllViews();
 
-        final SimpleDateFormat sdf = new SimpleDateFormat("MM.dd.YY");
+        final SimpleDateFormat sdf = new SimpleDateFormat("M.dd.YY");
         LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 128);
         params.weight = 1;
         params.topMargin = 24;
@@ -231,6 +233,7 @@ public class ActivityHist extends AppCompatActivity {
                 thumb.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 thumb.setLayoutParams(params);
                 thumb.setBackgroundColor(prime);
+                thumb.setId(entry.getId());
 
                 thumb.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -249,6 +252,12 @@ public class ActivityHist extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         MainActivity.dbhandle.deleteId(entry.getId());
+                        try {
+                            String entryId = ""+entry.getId();
+                            removePhoto(entryId);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         updateView();
                     }
                 });
@@ -272,5 +281,9 @@ public class ActivityHist extends AppCompatActivity {
 
             histScroll.addView(row);
         }
+    }
+
+    public void removePhoto(String entry) throws IOException {
+        MainActivity.photo.deletePhoto(this, entry);
     }
 }
