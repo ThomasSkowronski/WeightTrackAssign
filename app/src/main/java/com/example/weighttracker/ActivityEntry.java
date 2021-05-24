@@ -1,5 +1,7 @@
 package com.example.weighttracker;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,12 +13,12 @@ import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -27,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.DialogFragment;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,11 +57,7 @@ public class ActivityEntry extends AppCompatActivity {
     TextView dateTxt;
 
     //elements specific to the entry page
-    ConstraintLayout calLayout;
-    CalendarView cal;
-    long dateMilli;
-    Button calDone;
-    TextView dateview;
+    static TextView dateview;
     EditText weightEntertxt;
 
     Button submit;
@@ -66,6 +65,8 @@ public class ActivityEntry extends AppCompatActivity {
 
     ImageView entryPic;
     private Bitmap bitmap;
+
+    private static long entryDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,35 +118,8 @@ public class ActivityEntry extends AppCompatActivity {
             }
         });
 
-        cal = (CalendarView) findViewById(R.id.calendar);
-
-        cal.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-
-            @Override
-            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                final SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy");
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(year, month, dayOfMonth);
-                String sDate = sdf.format(calendar.getTime());
-                dateMilli = calendar.getTimeInMillis();
-                dateview.setText(sDate);
-            }
-        });
-
-
-
         dateview = (TextView) findViewById(R.id.dateView);
         dateview.setText("Date");
-
-        calLayout = findViewById(R.id.calLayout);
-
-        calDone = findViewById(R.id.calDone);
-        calDone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                calLayout.setVisibility(View.INVISIBLE);
-            }
-        });
 
         //camera button
         PackageManager manager = this.getPackageManager();
@@ -176,7 +150,7 @@ public class ActivityEntry extends AppCompatActivity {
                 Date todays = new Date();
                 try {
                     //checks for valid input in the date field, if not clears the fields to reset the input
-                    if (dateMilli == 0 | dateMilli > todays.getTime()){ weightEntertxt.setText(""); }
+                    if (entryDate == 0 | entryDate > todays.getTime()){ weightEntertxt.setText(""); }
 
                     double weightIn = Double.parseDouble(String.valueOf(weightEntertxt.getText()));
                     double kg = 0.0;
@@ -192,7 +166,7 @@ public class ActivityEntry extends AppCompatActivity {
                     }
 
                     //created the entry and adds to the db
-                    Entry entry = new Entry(0, dateMilli, kg, lb);
+                    Entry entry = new Entry(0, entryDate, kg, lb);
                     MainActivity.dbhandle.insert(entry);
 
                     if (entryPic.getDrawable() != null) {
@@ -274,13 +248,46 @@ public class ActivityEntry extends AppCompatActivity {
         nameTxt.setText(MainActivity.user.getName());
         goalTxt.setText("Goal: "+weight+units);
 
+        final SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy");
+        String sDate = sdf.format(entryDate);
+        dateview.setText(sDate);
+
     }
 
-    public void dateSelector(View view) {
-        calLayout.setVisibility(View.VISIBLE);
+    public void dateSelector(View v) {
+        DialogFragment newFragment = new ActivityEntry.DatePickerFragment();
+        newFragment.show(getSupportFragmentManager(), "timePicker");
     }
 
-    public void camera(View view) {
+    public static void setDate(long l) {
+        entryDate = l;
 
+        final SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy");
+        String sDate = sdf.format(entryDate);
+        ActivityEntry.dateview.setText(sDate);
+    }
+
+    public static class DatePickerFragment extends DialogFragment
+            implements DatePickerDialog.OnDateSetListener {
+
+        long milli;
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current date as the default date in the picker
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            // Create a new instance of DatePickerDialog and return it
+            return new DatePickerDialog(getActivity(), this, year, month, day);
+        }
+
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(year, month, day);
+            milli = calendar.getTimeInMillis();
+            ActivityEntry.setDate(milli);
+        }
     }
 }
