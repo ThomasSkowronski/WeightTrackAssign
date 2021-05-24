@@ -309,28 +309,8 @@ public class ActivitySett extends AppCompatActivity {
         try {
             File dir = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             String filename = "ProfilePic";
-            Drawable draw = new Drawable() {
-                @Override
-                public void draw(@NonNull Canvas canvas) {
-
-                }
-
-                @Override
-                public void setAlpha(int alpha) {
-
-                }
-
-                @Override
-                public void setColorFilter(@Nullable ColorFilter colorFilter) {
-
-                }
-
-                @Override
-                public int getOpacity() {
-                    return PixelFormat.OPAQUE;
-                }
-            }.createFromPath(dir+filename);
-            profPic.setImageDrawable(draw);
+            Drawable drawProfile = Drawable.createFromPath(dir+filename);
+            profPic.setImageDrawable(drawProfile);
             profPic.setBackgroundColor(prime);
         } catch (Exception e) {
             profPic.setImageBitmap(null);

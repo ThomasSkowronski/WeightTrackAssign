@@ -132,28 +132,8 @@ public class ActivityHist extends AppCompatActivity {
         try {
             File dir = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             String filename = "ProfilePic";
-            Drawable draw = new Drawable() {
-                @Override
-                public void draw(@NonNull Canvas canvas) {
-
-                }
-
-                @Override
-                public void setAlpha(int alpha) {
-
-                }
-
-                @Override
-                public void setColorFilter(@Nullable ColorFilter colorFilter) {
-
-                }
-
-                @Override
-                public int getOpacity() {
-                    return PixelFormat.OPAQUE;
-                }
-            }.createFromPath(dir+filename);
-            profPic.setImageDrawable(draw);
+            Drawable drawProfile = Drawable.createFromPath(dir+filename);
+            profPic.setImageDrawable(drawProfile);
             profPic.setBackgroundColor(prime);
         } catch (Exception e) {
             profPic.setImageBitmap(null);
@@ -208,29 +188,9 @@ public class ActivityHist extends AppCompatActivity {
                 //thumbnail pic for entries
                 ImageButton thumb = new ImageButton(this);
                 String filename = ""+entry.getId();
-                Drawable draw = new Drawable() {
-                    @Override
-                    public void draw(@NonNull Canvas canvas) {
 
-                    }
-
-                    @Override
-                    public void setAlpha(int alpha) {
-
-                    }
-
-                    @Override
-                    public void setColorFilter(@Nullable ColorFilter colorFilter) {
-
-                    }
-
-                    @Override
-                    public int getOpacity() {
-                        return PixelFormat.OPAQUE;
-                    }
-                }.createFromPath(dir+filename);
+                Drawable draw = Drawable.createFromPath(dir+filename);
                 thumb.setImageDrawable(draw);
-                thumb.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 thumb.setLayoutParams(params);
                 thumb.setBackgroundColor(prime);
                 thumb.setId(entry.getId());
@@ -239,7 +199,8 @@ public class ActivityHist extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         histViewer.setVisibility(View.VISIBLE);
-                        histImg.setImageDrawable(draw);
+                        Drawable histDraw = Drawable.createFromPath(dir+filename);
+                        histImg.setImageDrawable(histDraw);
                     }
                 });
 
