@@ -121,7 +121,7 @@
             android:background="@color/prime_back">
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/txtViewWeight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

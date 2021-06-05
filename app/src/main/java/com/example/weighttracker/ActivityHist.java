@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -176,9 +177,9 @@ public class ActivityHist extends AppCompatActivity {
                 TextView tvWeight = new TextView(this);
                 tvWeight.setId(entry.getId());
                 if (MainActivity.user.getUnit()){
-                    tvWeight.setText(" Weight: "+entry.getKg());
+                    tvWeight.setText(" Weight: "+decimal.format(entry.getKg())+units);
                 } else if (!MainActivity.user.getUnit()){
-                    tvWeight.setText(" Weight: "+entry.getLbs());
+                    tvWeight.setText(" Weight: "+decimal.format(entry.getLbs())+units);
                 }
                 tvWeight.setBackgroundColor(prime);
                 tvWeight.setLayoutParams(params);
@@ -189,8 +190,9 @@ public class ActivityHist extends AppCompatActivity {
                 ImageButton thumb = new ImageButton(this);
                 String filename = ""+entry.getId();
 
-                Drawable draw = Drawable.createFromPath(dir+filename);
-                thumb.setImageDrawable(draw);
+                //Per student response WEEK 11: no longer shows image for the thumbnails instead only when clicked
+                thumb.setImageResource(R.drawable.image);
+
                 thumb.setLayoutParams(params);
                 thumb.setBackgroundColor(prime);
                 thumb.setId(entry.getId());
@@ -199,7 +201,8 @@ public class ActivityHist extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         histViewer.setVisibility(View.VISIBLE);
-                        Drawable histDraw = Drawable.createFromPath(dir+filename);
+                        String source = ""+dir+thumb.getId();
+                        Drawable histDraw = Drawable.createFromPath(source);
                         histImg.setImageDrawable(histDraw);
                     }
                 });

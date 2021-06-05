@@ -68,6 +68,9 @@ public class ActivityEntry extends AppCompatActivity {
 
     private static long entryDate;
 
+    //As requested by students WEEK 11: adds more info in the edit text fields to show what the current unit is
+    TextView txtViewWeight;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -187,6 +190,9 @@ public class ActivityEntry extends AppCompatActivity {
             }
         });
 
+        //As requested by students WEEK 11: adds more info in the edit text fields to show what the current unit is
+        txtViewWeight = (TextView) findViewById(R.id.txtViewWeight);
+
         updateView();
     }
 
@@ -234,6 +240,8 @@ public class ActivityEntry extends AppCompatActivity {
         String sDate = sdf.format(entryDate);
         dateview.setText(sDate);
 
+        //As requested by students WEEK 11: adds more info in the edit text fields to show what the current unit is
+        txtViewWeight.setText("Weight ("+units+"): ");
     }
 
     public void dateSelector(View v) {

@@ -1,5 +1,6 @@
 package com.example.weighttracker;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -81,6 +83,12 @@ public class ActivitySett extends AppCompatActivity {
     //date picker
     static TextView goalDatePick;
     private static long goalDate;
+
+    //As requested by students WEEK 11: adds more info in the edit text fields to show what the current unit is
+    TextView settName;
+    TextView settGoal;
+    TextView settHeight;
+    TextView settDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -244,6 +252,12 @@ public class ActivitySett extends AppCompatActivity {
             showEditWindow();
             MainActivity.user.setNew(false);
         }
+
+        //As requested by students WEEK 11: adds more info in the edit text fields to show what the current unit is
+        settName = (TextView) findViewById(R.id.settName);
+        settGoal = (TextView) findViewById(R.id.settGoal);
+        settHeight = (TextView) findViewById(R.id.settHeight);
+        settDate = (TextView) findViewById(R.id.settDate);
     }
 
     protected void onActivityResult (int request, int result, Intent data) {
@@ -342,9 +356,18 @@ public class ActivitySett extends AppCompatActivity {
 
         currGoalDate.setText(sdate);
 
+        //As requested by students WEEK 11: adds more info in the edit text fields to show what the current unit is
+        settName.setText("Name: ");
+        settGoal.setText("Goal ("+units+"): ");
+        settHeight.setText("Height ("+unitH+"): ");
+        settDate.setText("Goal Date: ");
     }
 
     public void dateSelector(View view) {
+        //Per response in WEEK 11: Hides keyboard in settings when the date picker is selected
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
         DialogFragment newFragment = new DatePickerFragment();
         newFragment.show(getSupportFragmentManager(), "timePicker");
     }
